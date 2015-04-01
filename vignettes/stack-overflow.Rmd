@@ -11,7 +11,7 @@ vignette: >
 
 ```{r echo = FALSE}
 library(knitr)
-opts_chunk$set(fig.width = 5, fig.height = 5)
+opts_chunk$set(fig.width = 5, fig.height = 5, message = FALSE)
 set.seed(2015-04-01)
 ```
 
@@ -85,7 +85,7 @@ ggplot(answers_per_month, aes(month, n)) + geom_line() +
     geom_freehand(data = top_2, noisiness = 10)
 ```
 
-You can also make the circle bigger or smaller. (The data is normalized such that a radius of 1 causes the freehand circle to take up 1/25 of the plot's height and width)
+You can also make the circle bigger or smaller. (The result is normalized such that a radius of 1 causes the freehand circle to take up 1/25 of the plot's height and width).
 
 ```{r}
 ggplot(answers_per_month, aes(month, n)) + geom_line() +
