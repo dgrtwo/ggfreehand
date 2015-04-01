@@ -1,0 +1,20 @@
+Package: ggfreehand
+Type: Package
+Title: Add Freehand Circles to a ggplot2 Graph
+Version: 0.1
+Date: 2015-03-31
+Authors@R: person("David", "Robinson", email = "admiral.david@gmail.com", role = c("aut", "cre"))
+Maintainer: David Robinson <admiral.david@gmail.com>
+Description: Add one or more freehand circles to a ggplot2 graph
+License: MIT + file LICENSE
+LazyData: TRUE
+URL: http://github.com/dgrtwo/ggfreehand
+Depends: R (>= 2.10),
+    ggplot2,
+    proto
+Imports: dplyr
+VignetteBuilder: knitr
+BugReports: http://github.com/dgrtwo/ggfreehand/issues
+Suggests: knitr,
+    lubridate,
+    stackr

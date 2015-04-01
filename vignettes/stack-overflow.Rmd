@@ -1,0 +1,96 @@
+---
+title: "Making Graphs Worthy of Stack Overflow"
+author: "David Robinson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Graphing Stack Overflow Trends with Freehand Circles}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r echo = FALSE}
+library(knitr)
+opts_chunk$set(fig.width = 5, fig.height = 5)
+set.seed(2015-04-01)
+```
+
+The ggfreehand package allows one to add freehand red circles to a plot. This can improve many plots, but most importantly those that are to be posted on the Stack Exchange network.
+
+For example, we'll use the [stackr](https://github.com/dgrtwo/stackr) package to download all the answers from about a Stack Overflow user (me):
+
+```{r, eval = FALSE}
+library(stackr)
+answers <- stack_users(712603, "answers", num_pages = 10, pagesize = 100)
+
+library(dplyr)
+answers <- tbl_df(answers)
+```
+
+If you'd rather not use the stackr package, note that the `ggfreehand` package provides this data (as of 4/1/15) as a built-in dataset:
+
+```{r}
+library(ggfreehand)
+data(answers)
+```
+
+Suppose we are interested in number of answers per month, much as I analyze [here](http://meta.stackoverflow.com/a/252757/712603). We could find the number of answers per month like so:
+
+```{r}
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+
+answers_per_month <- answers %>%
+    mutate(month = round_date(creation_date, "month")) %>%
+    count(month)
+```
+
+This lets us use ggplot2 to create a graph of answers per month over time:
+
+```{r}
+library(ggplot2)
+ggplot(answers_per_month, aes(month, n)) + geom_line()
+```
+
+### What this graph is missing: more freehand red circles
+
+User [wooble](http://meta.stackoverflow.com/users/110707/wooble) noted a critical problem with this graph [in this comment](http://meta.stackoverflow.com/questions/252756/are-high-reputation-users-answering-fewer-questions/252757#comment9735_252757):
+
+> -1; needs more freehand red circles on the graphs.
+
+This is indeed a huge problem! As described [here](http://meta.stackexchange.com/a/19775/176330) in the "Many Memes of Meta", the freehand red circle is a long-standing tradition of Meta, one that has been scientifically proven to draw the user's attention more effectively than any other shape [citation needed].
+
+Unfortunately ggplot2 doesn't provide a layer for adding freehand circles, but the `ggfreehand` package does! Let's say we want to circle the two months in which I answered the most questions.
+
+```{r}
+top_2 <- answers_per_month %>% top_n(2, n)
+top_2
+```
+
+We can now add those as freehand circles with the `geom_freehand` layer.
+
+```{r}
+ggplot(answers_per_month, aes(month, n)) + geom_line() +
+    geom_freehand(data = top_2)
+```
+
+This is *much* more worthy of being posted on Meta Stack Overflow. If those circles are too messy or too neat for you, you can turn down or up the `noisiness` parameter:
+
+```{r}
+ggplot(answers_per_month, aes(month, n)) + geom_line() +
+    geom_freehand(data = top_2, noisiness = 2)
+
+ggplot(answers_per_month, aes(month, n)) + geom_line() +
+    geom_freehand(data = top_2, noisiness = 10)
+```
+
+You can also make the circle bigger or smaller. (The data is normalized such that a radius of 1 causes the freehand circle to take up 1/25 of the plot's height and width)
+
+```{r}
+ggplot(answers_per_month, aes(month, n)) + geom_line() +
+    geom_freehand(data = top_2, radius = 3)
+
+ggplot(answers_per_month, aes(month, n)) + geom_line() +
+    geom_freehand(data = top_2, radius = .2)
+```
